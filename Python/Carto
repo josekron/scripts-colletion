@@ -1,0 +1,45 @@
+#Build the following and make it run as fast as you possibly can using Python 3 (vanilla). The faster it runs, the more you will impress us!
+#
+#Your code should:
+#
+#Download this 2.2GB file: https://s3.amazonaws.com/carto-1000x/data/yellow_tripdata_2016-01.csv
+#Count the lines in the file
+#Calculate the average value of the tip_amount field.
+#All of that in the most efficient way you can come up with.
+#
+#That's it. Make it fly!
+#
+#------------------------------------------
+
+import csv
+import urllib.request
+import io
+import sys
+from functools import reduce
+
+args = sys.argv
+
+url = 'https://s3.amazonaws.com/carto-1000x/data/yellow_tripdata_2016-01.csv'
+# python script.py https://s3.amazonaws.com/carto-1000x/data/yellow_tripdata_2016-01.csv
+if(len(args) > 1):
+    url = args[1]
+
+#setup TextIOWrapper
+errors = sys.stdout.errors
+newline = sys.platform != 'win32' and '\n' or None
+line_buffering = sys.stdout.line_buffering
+
+fileUrl = urllib.request.urlopen(url)
+
+datareader = csv.reader(io.TextIOWrapper(fileUrl,'utf-8', errors, newline, line_buffering))
+header = next(datareader)#remove header
+
+AMOUNT_POS = 14
+
+def toTuple(x):
+    t = (float(x),1)
+    return t
+
+result = reduce(lambda x, y: (x[0] + y[0], x[1] + 1),map(toTuple, (x[AMOUNT_POS] for x in datareader)))
+
+print (result[1],result[0]/result[1])
