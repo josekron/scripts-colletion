@@ -20,7 +20,6 @@ from functools import reduce
 args = sys.argv
 
 url = 'https://s3.amazonaws.com/carto-1000x/data/yellow_tripdata_2016-01.csv'
-# python script.py https://s3.amazonaws.com/carto-1000x/data/yellow_tripdata_2016-01.csv
 if(len(args) > 1):
     url = args[1]
 
@@ -34,12 +33,8 @@ fileUrl = urllib.request.urlopen(url)
 datareader = csv.reader(io.TextIOWrapper(fileUrl,'utf-8', errors, newline, line_buffering))
 header = next(datareader)#remove header
 
-AMOUNT_POS = 14
+AMOUNT_POS = 15
 
-def toTuple(x):
-    t = (float(x),1)
-    return t
+result = reduce(lambda x, y: (x[0] + (y[0] - x[0])/x[1], x[1] + 1), map(lambda x: (float(x),1), (x[AMOUNT_POS] for x in datareader)))
 
-result = reduce(lambda x, y: (x[0] + y[0], x[1] + 1),map(toTuple, (x[AMOUNT_POS] for x in datareader)))
-
-print (result[1],result[0]/result[1])
+print (result)
